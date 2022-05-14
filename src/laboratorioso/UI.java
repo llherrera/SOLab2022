@@ -13,57 +13,75 @@ public class UI extends javax.swing.JFrame {
     ArrayList<Boolean> rw = new ArrayList<Boolean>();
     String error;
     int pro = 0;
-    
-    void addAL(ArrayList arr,Object o){
+    int marco = 0;
+    int so = 0;
+
+    void addAL(ArrayList arr, Object o) {
         arr.add(o);
     }
-    
-    void reset(){
+
+    void reset() {
         dl = new ArrayList<Integer>();
         rw = new ArrayList<Boolean>();
     }
-    
-    void soutV(Object[] o){
+
+    boolean potencia2(int num) {
+        boolean res = false;
+        if (num > 1 && Integer.bitCount(num) == 1) {
+            res = true;
+        }
+        return res;
+    }
+
+    void soutV(Object[] o) {
         for (int i = 0; i < o.length; i++) {
-            System.out.println(""+o[i]);
+            System.out.println("" + o[i]);
         }
     }
-    
-    void soutAL(ArrayList arr){
+
+    void soutAL(ArrayList arr) {
         for (Object o : arr) {
-            System.out.println(""+o);
+            System.out.println("" + o);
         }
     }
-    
-    void leerIns(String[] arr, int tamP){
-        try{
+
+    void leerIns(String[] arr, int tamP) {
+        try {
             int dl = Integer.parseInt(arr[0]);
             if (dl <= tamP && dl >= 0) {
                 String rw = arr[1];
-                if(rw.equals("E")){
+                if (rw.equals("E")) {
                     addAL(this.dl, dl);
                     addAL(this.rw, 0);
-                }else if(rw.equals("L")){
+                } else if (rw.equals("L")) {
                     addAL(this.dl, dl);
                     addAL(this.rw, 1);
-                }else{
+                } else {
                     error = "Ingrse L, para lectura, o E, para escritura";
                     JOptionPane.showMessageDialog(this, error);
                 }
-            }else{
+            } else {
                 error = "La dirección logica no está dentro del proceso";
                 JOptionPane.showMessageDialog(this, error);
             }
             String rw = arr[1];
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             error = "Ingrese una dirección logica";
             JOptionPane.showMessageDialog(this, error);
         }
         soutAL(this.dl);
         soutAL(this.rw);
     }
-    
+
+    void setMarcos(int tamSO, int tamM, int[] lisM) {
+        int numMarSO = tamSO / tamM;
+    }
+
+    void ejecutar(int tamM, int tamSO, int[] lismar) {
+
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -119,6 +137,11 @@ public class UI extends javax.swing.JFrame {
         jLabel6.setText("<html>Lista de marcos <br/> libres, separe <br/> por coma </html>");
 
         jButton1.setText("Empezar programa");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -201,9 +224,9 @@ public class UI extends javax.swing.JFrame {
 
     private void addInsBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInsBotActionPerformed
         String tamP = DisTamPro.getText();
-        try{
+        try {
             int tamPro = Integer.parseInt(tamP);
-            System.out.println("proceso:"+pro);
+            System.out.println("proceso:" + pro);
             if (tamPro != pro) {
                 error = "Cambió el tamaño del proceso, se reiniciarán las instrucciones";
                 pro = tamPro;
@@ -212,12 +235,38 @@ public class UI extends javax.swing.JFrame {
             }
             String[] instruc = DisIns.getText().split(":");
             leerIns(instruc, tamPro);
-        }catch(Exception e){
+        } catch (Exception e) {
             error = "Ingrese un numero";
             JOptionPane.showMessageDialog(this, error);
         }
-        
+
     }//GEN-LAST:event_addInsBotActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            int tamM = Integer.parseInt(DisTamMarco.getText());
+            if (!potencia2(tamM)) {
+                error = "El tamaño del marco debe ser potencia de 2 y mayor que 1";
+                JOptionPane.showMessageDialog(this, error);
+            } else {
+                if (dl.isEmpty()) {
+                    error = "Ingrese instrucciones antes de ejecutar";
+                    JOptionPane.showMessageDialog(this, error);
+                } else {
+                    int tamSO = Integer.parseInt(DisTamSO.getText());
+                    String[] lisMar = DisMarLibres.getText().split(",");
+                    int[] lismar = new int[lisMar.length];
+                    for (int i = 0; i < lisMar.length; i++) {
+                        lismar[i] = Integer.parseInt(lisMar[i]);
+                    }
+                    ejecutar(tamM, tamSO, lismar);
+                }
+            }
+        } catch (Exception e) {
+            error = "Digite numeros para proceder la ejecución";
+            JOptionPane.showMessageDialog(this, error);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
