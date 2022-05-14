@@ -15,6 +15,7 @@ public class UI extends javax.swing.JFrame {
     int pro = 0;
     int marco = 0;
     int so = 0;
+    int[] tablaP;
 
     void addAL(ArrayList arr, Object o) {
         arr.add(o);
@@ -74,10 +75,38 @@ public class UI extends javax.swing.JFrame {
         soutAL(this.rw);
     }
 
-    void setMarcos(int tamSO, int tamM, int[] lisM) {
+    int[] setMarcos(int tamSO, int tamM, int[] lisM) {
         int numMarSO = tamSO / tamM;
+        if (tamSO % tamM != 0) {numMarSO++;}
+        int numMarcos = numMarSO + lisM.length;
+        int[] tablaPaginas = new int[numMarcos];
+        
+        for (int i = 0; i < tablaPaginas.length; i++) {
+            tablaPaginas[i] = -1;
+        }
+        for (int i = 0; i < tablaPaginas.length; i++) {
+            int n = -1;
+            if (!existe(i,lisM)) {
+                do {
+                    n = (int)(Math.random()*10);
+                } while (existe(n, tablaPaginas));
+                tablaPaginas[i]=n;
+            }    
+        }
+        return tablaPaginas;
     }
 
+    boolean existe(int n, int[] arr){
+        boolean res = false;
+        for (int i = 0; i < arr.length; i++) {
+            if (n == arr[i]) {
+                res = true;
+                break;
+            }
+        }
+        return res;
+    }
+    
     void ejecutar(int tamM, int tamSO, int[] lismar) {
 
     }
@@ -259,7 +288,7 @@ public class UI extends javax.swing.JFrame {
                     for (int i = 0; i < lisMar.length; i++) {
                         lismar[i] = Integer.parseInt(lisMar[i]);
                     }
-                    ejecutar(tamM, tamSO, lismar);
+                    tablaP = setMarcos(tamSO, tamM, lismar);
                 }
             }
         } catch (Exception e) {

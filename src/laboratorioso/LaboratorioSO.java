@@ -6,5 +6,5 @@ public class LaboratorioSO {
         UI ui = new UI();
         ui.setVisible(true);
         
-    }    
+    }
 }
