@@ -18,6 +18,11 @@ public class UI extends javax.swing.JFrame {
         arr.add(o);
     }
     
+    void reset(){
+        dl = new ArrayList<Integer>();
+        rw = new ArrayList<Boolean>();
+    }
+    
     void soutV(Object[] o){
         for (int i = 0; i < o.length; i++) {
             System.out.println(""+o[i]);
@@ -33,7 +38,7 @@ public class UI extends javax.swing.JFrame {
     void leerIns(String[] arr, int tamP){
         try{
             int dl = Integer.parseInt(arr[0]);
-            if (dl < tamP && dl >= 0) {
+            if (dl <= tamP && dl >= 0) {
                 String rw = arr[1];
                 if(rw.equals("E")){
                     addAL(this.dl, dl);
@@ -43,14 +48,17 @@ public class UI extends javax.swing.JFrame {
                     addAL(this.rw, 1);
                 }else{
                     error = "Ingrse L, para lectura, o E, para escritura";
+                    JOptionPane.showMessageDialog(this, error);
                 }
             }else{
                 error = "La dirección logica no está dentro del proceso";
+                JOptionPane.showMessageDialog(this, error);
             }
             String rw = arr[1];
             
         }catch(Exception e){
             error = "Ingrese una dirección logica";
+            JOptionPane.showMessageDialog(this, error);
         }
         soutAL(this.dl);
         soutAL(this.rw);
@@ -195,14 +203,18 @@ public class UI extends javax.swing.JFrame {
         String tamP = DisTamPro.getText();
         try{
             int tamPro = Integer.parseInt(tamP);
+            System.out.println("proceso:"+pro);
             if (tamPro != pro) {
-                JOptionPane.showMessageDialog(this, "Cambió el tamaño del proceso, se reiniciarán las direcciones");
+                error = "Cambió el tamaño del proceso, se reiniciarán las instrucciones";
                 pro = tamPro;
+                reset();
+                JOptionPane.showMessageDialog(this, error);
             }
             String[] instruc = DisIns.getText().split(":");
             leerIns(instruc, tamPro);
         }catch(Exception e){
             error = "Ingrese un numero";
+            JOptionPane.showMessageDialog(this, error);
         }
         
     }//GEN-LAST:event_addInsBotActionPerformed
