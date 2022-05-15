@@ -16,8 +16,10 @@ public class UI extends javax.swing.JFrame {
     String error;
     int pro = 0;
     int marco = 0;
-    int so = 0;
+    int[] lisMar = {};
     int[] tablaMemPri;
+    int[][] tablap;
+    int contIter = 0;
 
     void reset() {
         dl = new ArrayList<Integer>();
@@ -63,12 +65,12 @@ public class UI extends javax.swing.JFrame {
             error = "Ingrese una dirección logica";
             JOptionPane.showMessageDialog(this, error);
         }
-        soutAL(this.dl);
-        soutAL(this.rw);
     }
 
     int[] setMarcos(int tamSO, int tamM, int[] lisM) {
         int numMarSO = tamSO / tamM;
+        marco = tamM;
+        lisMar = lisM;
         if (tamSO % tamM != 0) {
             numMarSO++;
         }
@@ -102,19 +104,48 @@ public class UI extends javax.swing.JFrame {
         return res;
     }
 
-    void setTablaMP(int[] tabla){
+    void setTablaMP(int[] tabla) {
         DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
         for (int i = 0; i < tabla.length; i++) {
             if (tabla[i] != -1) {
-                modeloMP.addRow(new Object[]{i,"SO"});
-            }else{
-                modeloMP.addRow(new Object[]{i,""});
+                modeloMP.addRow(new Object[]{i, "SO"});
+            } else {
+                modeloMP.addRow(new Object[]{i, ""});
             }
         }
     }
-    
-    void ejecutar(int tamM, int tamSO, int[] lismar) {
 
+    int[][] setTablaP() {
+        int numPag = lisMar.length;
+        
+        int[][] tablaPag = new int[numPag][4];
+/*
+        for (int i = 0; i < numPag; i++) {
+            memPrin[i] = -1;
+        }
+        for (int i = 0; i < memPrin.length; i++) {
+            int n = -1;
+            if (!existe(i, lisM)) {
+                do {
+                    n = (int) (Math.random() * 10);
+                } while (existe(n, memPrin));
+                memPrin[i] = n;
+            }
+        }
+        */
+        return tablaPag;
+    }
+
+    void setMarco() {
+
+    }
+
+    void ejecutar() {
+        DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        for (int i = 0; i < 10; i++) {
+            
+        }
+        int n = contIter % lisMar.length;
     }
 
     @SuppressWarnings("unchecked")
@@ -211,11 +242,11 @@ public class UI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "DirFis", "NumPag", "NumMar", "Val_Inv", "BitModi", "SwIn", "SwOut"
+                "Pag", "Mar", "Val_Inv", "Modi"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -224,11 +255,16 @@ public class UI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TablaP);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 20, 350, -1));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 410, -1));
 
         iteBot.setText("Iterar");
         iteBot.setEnabled(false);
-        jPanel1.add(iteBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 460, -1, -1));
+        iteBot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                iteBotActionPerformed(evt);
+            }
+        });
+        jPanel1.add(iteBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 460, -1, -1));
 
         autoBot.setText("too fast");
         autoBot.setEnabled(false);
@@ -237,7 +273,7 @@ public class UI extends javax.swing.JFrame {
                 autoBotActionPerformed(evt);
             }
         });
-        jPanel1.add(autoBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 500, 80, -1));
+        jPanel1.add(autoBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 490, 80, -1));
 
         jLabel4.setText("<html> Instrucción<br> (DL : L/E): </html>");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
@@ -263,7 +299,7 @@ public class UI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(TablaMP);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 20, 120, -1));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 20, 120, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1300, 650));
 
@@ -287,7 +323,6 @@ public class UI extends javax.swing.JFrame {
         String tamP = DisTamPro.getText();
         try {
             int tamPro = Integer.parseInt(tamP);
-            System.out.println("proceso:" + pro);
             if (tamPro != pro) {
                 error = "Cambió el tamaño del proceso, se reiniciarán las instrucciones";
                 pro = tamPro;
@@ -334,6 +369,11 @@ public class UI extends javax.swing.JFrame {
     private void autoBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoBotActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_autoBotActionPerformed
+
+    private void iteBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iteBotActionPerformed
+
+
+    }//GEN-LAST:event_iteBotActionPerformed
 
     /**
      * @param args the command line arguments
