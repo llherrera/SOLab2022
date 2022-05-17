@@ -21,6 +21,7 @@ public class UI extends javax.swing.JFrame {
     int[][] tablap;
     int contIter = 0;
     int numP = 0;
+    int temp = 0;
 
     void reset() {
         dls = new ArrayList<Integer>();
@@ -115,32 +116,38 @@ public class UI extends javax.swing.JFrame {
     }
 
     void setTablaP() {
-        int numPag = pro/marco;
-        if (pro%marco!=0) {
+        int numPag = pro / marco;
+        if (pro % marco != 0) {
             numPag++;
         }
         numP = numPag;
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
         for (int i = 0; i < numPag; i++) {
-            modeloP.addRow(new Object[]{i,"",0,""});
+            modeloP.addRow(new Object[]{i, "", 0, ""});
         }
     }
 
-    void iterar(int c){
+    void iterar(int c) {
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
         int dl = dls.get(c);
         int rw = rws.get(c);
-        int pag = dl/marco;
-        int mar = lisMar[c%lisMar.length];
-        
-        if (c >= lisMar.length) {
-            
+        int pag = dl / marco;
+        int mar = 0;
+        if (modeloP.getValueAt(pag, 2).equals(0)) {
+            mar = lisMar[temp];
+            temp++;
+            if (temp >= lisMar.length) {
+                temp = 0;
+            }
+            modeloP.setValueAt(mar, pag, 1);
+            modeloP.setValueAt(1, pag, 2);
+            modeloMP.setValueAt("Proceso", mar, 1);
         }
-        modeloP.setValueAt(mar, pag, 1);
-        modeloP.setValueAt(1, pag, 2);
         if (rw == 0 && modeloP.getValueAt(pag, 3).equals(0)) {
             modeloP.setValueAt(1, pag, 3);
         }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -370,7 +377,7 @@ public class UI extends javax.swing.JFrame {
         if (contIter < dls.size()) {
             iterar(contIter);
             contIter++;
-        }else{
+        } else {
             error = "No se puede iterar";
             JOptionPane.showMessageDialog(this, error);
         }
