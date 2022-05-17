@@ -11,8 +11,8 @@ public class UI extends javax.swing.JFrame {
         initComponents();
     }
 
-    ArrayList<Integer> dl = new ArrayList<Integer>();
-    ArrayList<Integer> rw = new ArrayList<Integer>();
+    ArrayList<Integer> dls = new ArrayList<Integer>();
+    ArrayList<Integer> rws = new ArrayList<Integer>();
     String error;
     int pro = 0;
     int marco = 0;
@@ -20,10 +20,11 @@ public class UI extends javax.swing.JFrame {
     int[] tablaMemPri;
     int[][] tablap;
     int contIter = 0;
+    int numP = 0;
 
     void reset() {
-        dl = new ArrayList<Integer>();
-        rw = new ArrayList<Integer>();
+        dls = new ArrayList<Integer>();
+        rws = new ArrayList<Integer>();
     }
 
     boolean potencia2(int num) {
@@ -46,11 +47,11 @@ public class UI extends javax.swing.JFrame {
             if (dl <= tamP && dl >= 0) {
                 String rw = arr[1];
                 if (rw.equals("E")) {
-                    this.dl.add(dl);
-                    this.rw.add(0);
+                    this.dls.add(dl);
+                    this.rws.add(0);
                 } else if (rw.equals("L")) {
-                    this.dl.add(dl);
-                    this.rw.add(1);
+                    this.dls.add(dl);
+                    this.rws.add(1);
                 } else {
                     error = "Ingrse L, para lectura, o E, para escritura";
                     JOptionPane.showMessageDialog(this, error);
@@ -59,8 +60,6 @@ public class UI extends javax.swing.JFrame {
                 error = "La dirección logica no está dentro del proceso";
                 JOptionPane.showMessageDialog(this, error);
             }
-            String rw = arr[1];
-
         } catch (Exception e) {
             error = "Ingrese una dirección logica";
             JOptionPane.showMessageDialog(this, error);
@@ -115,37 +114,33 @@ public class UI extends javax.swing.JFrame {
         }
     }
 
-    int[][] setTablaP() {
-        int numPag = lisMar.length;
-        
-        int[][] tablaPag = new int[numPag][4];
-/*
-        for (int i = 0; i < numPag; i++) {
-            memPrin[i] = -1;
+    void setTablaP() {
+        int numPag = pro/marco;
+        if (pro%marco!=0) {
+            numPag++;
         }
-        for (int i = 0; i < memPrin.length; i++) {
-            int n = -1;
-            if (!existe(i, lisM)) {
-                do {
-                    n = (int) (Math.random() * 10);
-                } while (existe(n, memPrin));
-                memPrin[i] = n;
-            }
-        }
-        */
-        return tablaPag;
-    }
-
-    void setMarco() {
-
-    }
-
-    void ejecutar() {
+        numP = numPag;
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < numPag; i++) {
+            modeloP.addRow(new Object[]{i,"",0,""});
+        }
+    }
+
+    void iterar(int c){
+        DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        int dl = dls.get(c);
+        int rw = rws.get(c);
+        int pag = dl/marco;
+        int mar = lisMar[c%lisMar.length];
+        
+        if (c >= lisMar.length) {
             
         }
-        int n = contIter % lisMar.length;
+        modeloP.setValueAt(mar, pag, 1);
+        modeloP.setValueAt(1, pag, 2);
+        if (rw == 0 && modeloP.getValueAt(pag, 3).equals(0)) {
+            modeloP.setValueAt(1, pag, 3);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -345,7 +340,7 @@ public class UI extends javax.swing.JFrame {
                 error = "El tamaño del marco debe ser potencia de 2 y mayor que 1";
                 JOptionPane.showMessageDialog(this, error);
             } else {
-                if (dl.isEmpty()) {
+                if (dls.isEmpty()) {
                     error = "Ingrese instrucciones antes de ejecutar";
                     JOptionPane.showMessageDialog(this, error);
                 } else {
@@ -358,6 +353,7 @@ public class UI extends javax.swing.JFrame {
                     iteBot.setEnabled(true);
                     autoBot.setEnabled(true);
                     tablaMemPri = setMarcos(tamSO, tamM, lismar);
+                    setTablaP();
                 }
             }
         } catch (Exception e) {
@@ -371,8 +367,13 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_autoBotActionPerformed
 
     private void iteBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iteBotActionPerformed
-
-
+        if (contIter < dls.size()) {
+            iterar(contIter);
+            contIter++;
+        }else{
+            error = "No se puede iterar";
+            JOptionPane.showMessageDialog(this, error);
+        }
     }//GEN-LAST:event_iteBotActionPerformed
 
     /**
