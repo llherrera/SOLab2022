@@ -3,6 +3,13 @@ package laboratorioso;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class UI extends javax.swing.JFrame {
@@ -10,7 +17,10 @@ public class UI extends javax.swing.JFrame {
     public UI() {
         initComponents();
     }
-
+    File archivo;
+    
+    int[] dirLo;
+    int[] lectuEs;
     ArrayList<Integer> dls = new ArrayList<Integer>();
     ArrayList<Integer> rws = new ArrayList<Integer>();
     String error;
@@ -147,6 +157,7 @@ public class UI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        fileC = new javax.swing.JFileChooser();
         DisTamMarco = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         DisTamSO = new javax.swing.JTextField();
@@ -315,6 +326,34 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_DisMarLibresActionPerformed
 
     private void addInsBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInsBotActionPerformed
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(".CSV", "CSV");
+        fileC.setFileFilter(filter);
+        int op = fileC.showOpenDialog(this);
+        if (op == JFileChooser.APPROVE_OPTION) {
+            archivo = fileC.getSelectedFile();
+            try (Scanner sc = new Scanner(archivo)) {
+                while(sc.hasNextLine()){
+                    String linea = sc.nextLine();
+                    String data[] = linea.split(",");
+                    dirLo = new int[data.length];
+                    lectuEs = new int[data.length];
+                    for (int i = 0; i < data.length; ++i){
+                        if (data[i].equals("E") || data[i].equals("L")) {
+                            if (data[i].equals("E")) {
+                                lectuEs[i]=0;
+                            } else if (data[i].equals("L")) {
+                                lectuEs[i]=1;
+                            }
+                        }else{
+                            dirLo[i] = Integer.valueOf(data[i]);
+                        }
+                    }
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ex.toString());
+            }
+        }
+        /*
         String tamP = DisTamPro.getText();
         try {
             int tamPro = Integer.parseInt(tamP);
@@ -330,7 +369,7 @@ public class UI extends javax.swing.JFrame {
             error = "Ingrese un numero";
             JOptionPane.showMessageDialog(this, error);
         }
-
+*/
     }//GEN-LAST:event_addInsBotActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -421,6 +460,7 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JTable TablaP;
     private javax.swing.JButton addInsBot;
     private javax.swing.JButton autoBot;
+    private javax.swing.JFileChooser fileC;
     private javax.swing.JButton iteBot;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
