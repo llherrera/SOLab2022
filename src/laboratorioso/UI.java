@@ -3,8 +3,12 @@ package laboratorioso;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,11 +22,13 @@ public class UI extends javax.swing.JFrame {
         initComponents();
     }
     File archivo;
-    
-    int[] dirLo;
-    int[] lectuEs;
-    ArrayList<Integer> dls = new ArrayList<Integer>();
-    ArrayList<Integer> rws = new ArrayList<Integer>();
+
+    public static final String SEPARADOR = ",";
+
+    int[] dls;
+    int[] rws;
+    ArrayList<String> dlsS = new ArrayList<>();
+    ArrayList<String> rwsS = new ArrayList<>();
     String error;
     int pro = 0;
     int marco = 0;
@@ -32,9 +38,38 @@ public class UI extends javax.swing.JFrame {
     int contIter = 0;
     int numP = 0;
 
-    void reset() {
-        dls = new ArrayList<Integer>();
-        rws = new ArrayList<Integer>();
+    void setInst() {
+        dls = new int[dlsS.size()];
+        rws = new int[rwsS.size()];
+
+        for (int i = 0; i < dlsS.size(); i++) {
+            dls[i] = Integer.parseInt(dlsS.get(i));
+            if (rwsS.get(i).equals("E")) {
+                rws[i] = 0;
+            }
+            if (rwsS.get(i).equals("L")) {
+                rws[i] = 1;
+            }
+        }
+
+        for (int i = 0; i < dls.length; i++) {
+            System.out.println(dls[i] + " " + rws[i]);
+        }
+    }
+
+    int getMayor(int[] arr) {
+        int res = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > res) {
+                res = arr[i];
+            }
+        }
+        return res;
+    }
+
+    void reset(int n) {
+        dls = new int[n];
+        rws = new int[n];
     }
 
     boolean potencia2(int num) {
@@ -51,29 +86,10 @@ public class UI extends javax.swing.JFrame {
         }
     }
 
-    void leerIns(String[] arr, int tamP) {
-        try {
-            int dl = Integer.parseInt(arr[0]);
-            if (dl <= tamP && dl >= 0) {
-                String rw = arr[1];
-                if (rw.equals("E")) {
-                    this.dls.add(dl);
-                    this.rws.add(0);
-                } else if (rw.equals("L")) {
-                    this.dls.add(dl);
-                    this.rws.add(1);
-                } else {
-                    error = "Ingrse L, para lectura, o E, para escritura";
-                    JOptionPane.showMessageDialog(this, error);
-                }
-            } else {
-                error = "La dirección logica no está dentro del proceso";
-                JOptionPane.showMessageDialog(this, error);
-            }
-        } catch (Exception e) {
-            error = "Ingrese una dirección logica";
-            JOptionPane.showMessageDialog(this, error);
-        }
+    boolean verificatTam() {
+        boolean res = false;
+
+        return res;
     }
 
     int[] setMarcos(int tamSO, int tamM, int[] lisM) {
@@ -125,26 +141,26 @@ public class UI extends javax.swing.JFrame {
     }
 
     void setTablaP() {
-        int numPag = pro/marco;
-        if (pro%marco!=0) {
+        int numPag = pro / marco;
+        if (pro % marco != 0) {
             numPag++;
         }
         numP = numPag;
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
         for (int i = 0; i < numPag; i++) {
-            modeloP.addRow(new Object[]{i,"",0,""});
+            modeloP.addRow(new Object[]{i, "", 0, ""});
         }
     }
 
-    void iterar(int c){
+    void iterar(int c) {
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
-        int dl = dls.get(c);
-        int rw = rws.get(c);
-        int pag = dl/marco;
-        int mar = lisMar[c%lisMar.length];
-        
+        int dl = dls[c];
+        int rw = rws[c];
+        int pag = dl / marco;
+        int mar = lisMar[c % lisMar.length];
+
         if (c >= lisMar.length) {
-            
+
         }
         modeloP.setValueAt(mar, pag, 1);
         modeloP.setValueAt(1, pag, 2);
@@ -326,50 +342,39 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_DisMarLibresActionPerformed
 
     private void addInsBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInsBotActionPerformed
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(".CSV", "CSV");
-        fileC.setFileFilter(filter);
-        int op = fileC.showOpenDialog(this);
-        if (op == JFileChooser.APPROVE_OPTION) {
-            archivo = fileC.getSelectedFile();
-            try (Scanner sc = new Scanner(archivo)) {
-                while(sc.hasNextLine()){
-                    String linea = sc.nextLine();
-                    String data[] = linea.split(",");
-                    dirLo = new int[data.length];
-                    lectuEs = new int[data.length];
-                    for (int i = 0; i < data.length; ++i){
-                        if (data[i].equals("E") || data[i].equals("L")) {
-                            if (data[i].equals("E")) {
-                                lectuEs[i]=0;
-                            } else if (data[i].equals("L")) {
-                                lectuEs[i]=1;
-                            }
-                        }else{
-                            dirLo[i] = Integer.valueOf(data[i]);
-                        }
+        BufferedReader bufferLectura = null;
+        try {
+            bufferLectura = new BufferedReader(new FileReader("Entrada.csv"));
+            String linea = bufferLectura.readLine();
+            int c = 0, t = 0;
+            while (linea != null) {
+                String[] campos = linea.split(SEPARADOR);
+                for (String a : Arrays.asList(campos)) {
+                    if (c == 0 && t == 0) {
+                        dlsS.add(a.substring(1, a.length()));
+                        c = 1;
+                    } else if (t == 0 && c != 0) {
+                        dlsS.add(a);
+                    } else {
+                        rwsS.add(a);
                     }
                 }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(ex.toString());
+                t++;
+                linea = bufferLectura.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // Cierro el buffer de lectura
+            if (bufferLectura != null) {
+                try {
+                    bufferLectura.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        /*
-        String tamP = DisTamPro.getText();
-        try {
-            int tamPro = Integer.parseInt(tamP);
-            if (tamPro != pro) {
-                error = "Cambió el tamaño del proceso, se reiniciarán las instrucciones";
-                pro = tamPro;
-                reset();
-                JOptionPane.showMessageDialog(this, error);
-            }
-            String[] instruc = DisIns.getText().split(":");
-            leerIns(instruc, tamPro);
-        } catch (Exception e) {
-            error = "Ingrese un numero";
-            JOptionPane.showMessageDialog(this, error);
-        }
-*/
+        setInst();
     }//GEN-LAST:event_addInsBotActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -379,20 +384,25 @@ public class UI extends javax.swing.JFrame {
                 error = "El tamaño del marco debe ser potencia de 2 y mayor que 1";
                 JOptionPane.showMessageDialog(this, error);
             } else {
-                if (dls.isEmpty()) {
+                if (dls.length == 0) {
                     error = "Ingrese instrucciones antes de ejecutar";
                     JOptionPane.showMessageDialog(this, error);
                 } else {
                     int tamSO = Integer.parseInt(DisTamSO.getText());
-                    String[] lisMar = DisMarLibres.getText().split(",");
-                    int[] lismar = new int[lisMar.length];
-                    for (int i = 0; i < lisMar.length; i++) {
-                        lismar[i] = Integer.parseInt(lisMar[i]);
+                    if (tamSO < getMayor(dls)) {
+                        error = "El tamaño del proceso debe ser mayor a: " + getMayor(dls);
+                    } else {
+                        String[] lisMar = DisMarLibres.getText().split(",");
+                        int[] lismar = new int[lisMar.length];
+                        for (int i = 0; i < lisMar.length; i++) {
+                            lismar[i] = Integer.parseInt(lisMar[i]);
+                        }
+                        iteBot.setEnabled(true);
+                        autoBot.setEnabled(true);
+                        tablaMemPri = setMarcos(tamSO, tamM, lismar);
+                        setTablaP();
                     }
-                    iteBot.setEnabled(true);
-                    autoBot.setEnabled(true);
-                    tablaMemPri = setMarcos(tamSO, tamM, lismar);
-                    setTablaP();
+
                 }
             }
         } catch (Exception e) {
@@ -406,10 +416,10 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_autoBotActionPerformed
 
     private void iteBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iteBotActionPerformed
-        if (contIter < dls.size()) {
+        if (contIter < dls.length) {
             iterar(contIter);
             contIter++;
-        }else{
+        } else {
             error = "No se puede iterar";
             JOptionPane.showMessageDialog(this, error);
         }
@@ -429,16 +439,24 @@ public class UI extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
