@@ -3,6 +3,8 @@ package laboratorioso;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +22,10 @@ public class UI extends javax.swing.JFrame {
 
     public UI() {
         initComponents();
+        DisTamMarco.setText("4");
+        DisTamSO.setText("8");
+        DisTamPro.setText("32");
+        DisMarLibres.setText("1,2");
     }
     File archivo;
 
@@ -50,10 +56,6 @@ public class UI extends javax.swing.JFrame {
             if (rwsS.get(i).equals("L")) {
                 rws[i] = 1;
             }
-        }
-
-        for (int i = 0; i < dls.length; i++) {
-            System.out.println(dls[i] + " " + rws[i]);
         }
     }
 
@@ -152,6 +154,22 @@ public class UI extends javax.swing.JFrame {
         }
     }
 
+    void dibujarProceso() {
+        Graphics g = panel.getGraphics();
+        g.setColor(Color.BLACK);
+        int c = 0, masx = 0, masy = 0;
+        while (c < numP) {
+            g.drawRect(30 + masx, 100 + masy, 20, 20);
+            if (30 + masx < panel.getWidth() - 60) {
+                masx += 30;
+            }else{
+                masx=0;
+                masy+=30;
+            }
+            c++;
+        }
+    }
+
     void iterar(int c) {
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
         int dl = dls[c];
@@ -180,8 +198,6 @@ public class UI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         DisTamPro = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        DisIns = new javax.swing.JTextField();
-        addInsBot = new javax.swing.JButton();
         DisMarLibres = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -190,10 +206,11 @@ public class UI extends javax.swing.JFrame {
         TablaP = new javax.swing.JTable();
         iteBot = new javax.swing.JButton();
         autoBot = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         TablaMP = new javax.swing.JTable();
+        addInsBot = new javax.swing.JButton();
+        panel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -219,21 +236,6 @@ public class UI extends javax.swing.JFrame {
 
         jLabel3.setText("Tamaño proceso:");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 121, -1, -1));
-
-        DisIns.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DisInsActionPerformed(evt);
-            }
-        });
-        getContentPane().add(DisIns, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 64, -1));
-
-        addInsBot.setText("Añadir");
-        addInsBot.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addInsBotActionPerformed(evt);
-            }
-        });
-        getContentPane().add(addInsBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 150, 85, 31));
 
         DisMarLibres.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -297,9 +299,6 @@ public class UI extends javax.swing.JFrame {
         });
         jPanel1.add(autoBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 490, 80, -1));
 
-        jLabel4.setText("<html> Instrucción<br> (DL : L/E): </html>");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, -1, -1));
-
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/laboratorioso/disco3.png"))); // NOI18N
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 20, -1, -1));
 
@@ -323,6 +322,15 @@ public class UI extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 20, 120, -1));
 
+        addInsBot.setText("Añadir Instrucciones");
+        addInsBot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addInsBotActionPerformed(evt);
+            }
+        });
+        jPanel1.add(addInsBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 160, 140, 31));
+        jPanel1.add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 20, 300, 600));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1300, 650));
 
         pack();
@@ -332,10 +340,6 @@ public class UI extends javax.swing.JFrame {
     private void DisTamProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisTamProActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DisTamProActionPerformed
-
-    private void DisInsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisInsActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_DisInsActionPerformed
 
     private void DisMarLibresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisMarLibresActionPerformed
         // TODO add your handling code here:
@@ -388,10 +392,12 @@ public class UI extends javax.swing.JFrame {
                     error = "Ingrese instrucciones antes de ejecutar";
                     JOptionPane.showMessageDialog(this, error);
                 } else {
-                    int tamSO = Integer.parseInt(DisTamSO.getText());
-                    if (tamSO < getMayor(dls)) {
+                    int tamPro = Integer.parseInt(DisTamPro.getText());
+                    if (tamPro < getMayor(dls)) {
                         error = "El tamaño del proceso debe ser mayor a: " + getMayor(dls);
+                        JOptionPane.showMessageDialog(this, error);
                     } else {
+                        int tamSO = Integer.parseInt(DisTamSO.getText());
                         String[] lisMar = DisMarLibres.getText().split(",");
                         int[] lismar = new int[lisMar.length];
                         for (int i = 0; i < lisMar.length; i++) {
@@ -399,8 +405,10 @@ public class UI extends javax.swing.JFrame {
                         }
                         iteBot.setEnabled(true);
                         autoBot.setEnabled(true);
+                        pro = Integer.parseInt(DisTamPro.getText());
                         tablaMemPri = setMarcos(tamSO, tamM, lismar);
                         setTablaP();
+                        dibujarProceso();
                     }
 
                 }
@@ -469,7 +477,6 @@ public class UI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField DisIns;
     private javax.swing.JTextField DisMarLibres;
     private javax.swing.JTextField DisTamMarco;
     private javax.swing.JTextField DisTamPro;
@@ -484,11 +491,11 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 }
