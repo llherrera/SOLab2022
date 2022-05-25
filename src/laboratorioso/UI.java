@@ -33,8 +33,8 @@ public class UI extends javax.swing.JFrame {
 
     int[] dls;
     int[] rws;
-    ArrayList<String> dlsS = new ArrayList<>();
-    ArrayList<String> rwsS = new ArrayList<>();
+    ArrayList<String> dlsS;
+    ArrayList<String> rwsS;
     String error;
     int pro = 0;
     int marco = 0;
@@ -42,7 +42,26 @@ public class UI extends javax.swing.JFrame {
     int[] tablaMemPri;
     int[][] tablap;
     int contIter = 0;
+    int sigMarco = 0;
     int numP = 0;
+
+    void preset() {
+        DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
+        int num = modeloMP.getRowCount();
+        for (int i = 0; i < num; i++) {
+            modeloMP.removeRow(0);
+        }
+
+        DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        num = modeloP.getRowCount();
+        for (int i = 0; i < num; i++) {
+            modeloP.removeRow(0);
+        }
+
+        Graphics g = panel.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(29, 99, 250, panel.getHeight() - 50);
+    }
 
     void setInst() {
         dls = new int[dlsS.size()];
@@ -135,9 +154,9 @@ public class UI extends javax.swing.JFrame {
         DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
         for (int i = 0; i < tabla.length; i++) {
             if (tabla[i] != -1) {
-                modeloMP.addRow(new Object[]{i, "SO"});
+                modeloMP.addRow(new Object[]{i, "SO", -1});
             } else {
-                modeloMP.addRow(new Object[]{i, ""});
+                modeloMP.addRow(new Object[]{i, "", -1});
             }
         }
     }
@@ -150,7 +169,7 @@ public class UI extends javax.swing.JFrame {
         numP = numPag;
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
         for (int i = 0; i < numPag; i++) {
-            modeloP.addRow(new Object[]{i, "", 0, ""});
+            modeloP.addRow(new Object[]{i, -1, 0, 0});
         }
     }
 
@@ -162,29 +181,67 @@ public class UI extends javax.swing.JFrame {
             g.drawRect(30 + masx, 100 + masy, 20, 20);
             if (30 + masx < panel.getWidth() - 60) {
                 masx += 30;
-            }else{
-                masx=0;
-                masy+=30;
+            } else {
+                masx = 0;
+                masy += 30;
             }
             c++;
         }
     }
 
-    void iterar(int c) {
+    void iterar() {
         DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
-        int dl = dls[c];
-        int rw = rws[c];
+        DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
+        int dl = dls[contIter];
+        int rw = rws[contIter];
         int pag = dl / marco;
-        int mar = lisMar[c % lisMar.length];
+        int mar = lisMar[sigMarco % lisMar.length];
+        System.out.println(pag+" "+mar);
+        if (modeloP.getValueAt(pag, 2).equals(0)) {
+            if (modeloMP.getValueAt(mar, 2).equals(-1)) {
+                //swap in
 
-        if (c >= lisMar.length) {
+                swapInProcess(mar, pag, rw);
+            } else {
+                //animacio swap out si Modi==1
+                //animacion swap in
 
+                swapOutProcess(mar);
+                swapInProcess(mar, pag, rw);
+            }
+            sigMarco++;
+        } else {
+            if (rw == 0) {
+                modeloP.setValueAt(1, pag, 3);
+            }
         }
-        modeloP.setValueAt(mar, pag, 1);
+
+        /*modeloP.setValueAt(mar, pag, 1);
         modeloP.setValueAt(1, pag, 2);
         if (rw == 0 && modeloP.getValueAt(pag, 3).equals(0)) {
             modeloP.setValueAt(1, pag, 3);
+        }*/
+    }
+
+    void swapInProcess(int mar, int pag, int rw) {
+        DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
+        modeloP.setValueAt(mar, pag, 1);
+        modeloP.setValueAt(1, pag, 2);
+        if (rw == 0) {
+            modeloP.setValueAt(1, pag, 3);
         }
+        modeloMP.setValueAt("Proceso", mar, 1);
+        modeloMP.setValueAt(pag, mar, 2);
+    }
+
+    void swapOutProcess(int mar) {
+        DefaultTableModel modeloP = (DefaultTableModel) TablaP.getModel();
+        DefaultTableModel modeloMP = (DefaultTableModel) TablaMP.getModel();
+        int pagi = (int) modeloMP.getValueAt(mar, 2);
+        modeloP.setValueAt(-1, pagi, 1);
+        modeloP.setValueAt(0, pagi, 2);
+        modeloP.setValueAt(0, pagi, 3);
     }
 
     @SuppressWarnings("unchecked")
@@ -307,11 +364,11 @@ public class UI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "#Marco", "Proceso"
+                "#Marco", "Proceso", "PagProceso"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -320,7 +377,7 @@ public class UI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(TablaMP);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 20, 120, -1));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 20, 200, -1));
 
         addInsBot.setText("Añadir Instrucciones");
         addInsBot.addActionListener(new java.awt.event.ActionListener() {
@@ -348,6 +405,8 @@ public class UI extends javax.swing.JFrame {
     private void addInsBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInsBotActionPerformed
         BufferedReader bufferLectura = null;
         try {
+            dlsS = new ArrayList<>();
+            rwsS = new ArrayList<>();
             bufferLectura = new BufferedReader(new FileReader("Entrada.csv"));
             String linea = bufferLectura.readLine();
             int c = 0, t = 0;
@@ -397,6 +456,7 @@ public class UI extends javax.swing.JFrame {
                         error = "El tamaño del proceso debe ser mayor a: " + getMayor(dls);
                         JOptionPane.showMessageDialog(this, error);
                     } else {
+                        preset();
                         int tamSO = Integer.parseInt(DisTamSO.getText());
                         String[] lisMar = DisMarLibres.getText().split(",");
                         int[] lismar = new int[lisMar.length];
@@ -425,10 +485,10 @@ public class UI extends javax.swing.JFrame {
 
     private void iteBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iteBotActionPerformed
         if (contIter < dls.length) {
-            iterar(contIter);
+            iterar();
             contIter++;
         } else {
-            error = "No se puede iterar";
+            error = "No hay instruciones para ejecutar";
             JOptionPane.showMessageDialog(this, error);
         }
     }//GEN-LAST:event_iteBotActionPerformed
