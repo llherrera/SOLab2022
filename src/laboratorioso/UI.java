@@ -60,7 +60,7 @@ public class UI extends javax.swing.JFrame {
 
         Graphics g = panel.getGraphics();
         g.setColor(Color.WHITE);
-        g.fillRect(29, 99, 250, panel.getHeight() - 50);
+        g.fillRect(29, 99, 250, panel.getHeight() - 200);
     }
 
     void setInst() {
@@ -215,12 +215,6 @@ public class UI extends javax.swing.JFrame {
                 modeloP.setValueAt(1, pag, 3);
             }
         }
-
-        /*modeloP.setValueAt(mar, pag, 1);
-        modeloP.setValueAt(1, pag, 2);
-        if (rw == 0 && modeloP.getValueAt(pag, 3).equals(0)) {
-            modeloP.setValueAt(1, pag, 3);
-        }*/
     }
 
     void swapInProcess(int mar, int pag, int rw) {
@@ -336,7 +330,7 @@ public class UI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TablaP);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 410, -1));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 200, -1));
 
         iteBot.setText("Iterar");
         iteBot.setEnabled(false);
