@@ -38,8 +38,9 @@ public class UI extends javax.swing.JFrame {
     int[] lisMar = {}, tablaMemPri, rws, dls;
     int[][] tablap;
     int pro = 0, marco = 0, contIter = 0, sigMarco = 0, numP = 0, numM = 0;
-    int numReem=0;
-    String serie="";
+    int numReem = 0;
+    String serie = "";
+    String aaaaa="";
 
     void preset() {
         contIter = 0;
@@ -209,18 +210,18 @@ public class UI extends javax.swing.JFrame {
         DefaultTableModel modeloOut = (DefaultTableModel) TablaOut.getModel();
         int dl = dls[cont];
         int rw = rws[cont];
-        int pag = dl / marco;
+        int pag = Integer.parseInt(dlsS.get(cont)) / marco;
         int mar = lisMar[sigMarco % lisMar.length];
-        int df = mar * marco + (dl % marco);
-        serie+=pag+" ";
+        int df = mar * marco + (Integer.parseInt(dlsS.get(cont)) % marco);
+        serie += pag + " ";
         if (modeloP.getValueAt(pag, 2).equals(0)) {
             if (modeloMP.getValueAt(mar, 2).equals(-1)) {
                 swapInProcess(mar, pag, rw);
-                modeloOut.addRow(new Object[]{dl, rwsS.get(cont), pag, mar, df, "X", ""});
+                modeloOut.addRow(new Object[]{Integer.parseInt(dlsS.get(cont)), rwsS.get(cont), pag, mar, df, "X", ""});
                 swapInDraw(panel, pag, mar, 0);
                 swapInDraw(panelMP, mar, pag, 0);
             } else {
-                modeloOut.addRow(new Object[]{dl, rwsS.get(cont), pag, mar, df, "X", ""});
+                modeloOut.addRow(new Object[]{Integer.parseInt(dlsS.get(cont)), rwsS.get(cont), pag, mar, df, "X", ""});
                 if (modeloP.getValueAt((int) modeloMP.getValueAt(mar, 2), 3).equals(1)) {
                     modeloOut.setValueAt("X", cont, 6);
                     swapOutDraw(mar, pag);
@@ -236,17 +237,17 @@ public class UI extends javax.swing.JFrame {
             sigMarco++;
         } else {
             mar = (int) modeloP.getValueAt(pag, 1);
-            df = mar * marco + (dl % marco);
+            df = mar * marco + (Integer.parseInt(dlsS.get(cont)) % marco);
             if (rw == 0) {
                 modeloP.setValueAt(1, pag, 3);
                 swapInDraw(panelMP, mar, pag, 1);
             }
-            modeloOut.addRow(new Object[]{dl, rwsS.get(cont), pag, mar, df, "", ""});
+            modeloOut.addRow(new Object[]{Integer.parseInt(dlsS.get(cont)), rwsS.get(cont), pag, mar, df, "", ""});
             modeloP.setValueAt(1 + ((int) modeloP.getValueAt(pag, 4)), pag, 4);
         }
-        
-        if (cont==dls.length-1) {
-            JOptionPane.showMessageDialog(this, cont+" fallos de pagina\nNumero de reemplazos: "+numReem+"\nSerie de referencia: "+serie);
+
+        if (cont == dls.length - 1) {
+            JOptionPane.showMessageDialog(this, cont + " fallos de pagina\nNumero de reemplazos: " + numReem + "\nSerie de referencia: " + serie);
         }
     }
 
@@ -442,7 +443,7 @@ public class UI extends javax.swing.JFrame {
         });
         jPanel1.add(addInsBot, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 31));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon("D:\\Leonardo\\U\\SO\\disco4.png")); // NOI18N
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/laboratorioso/disco4.png"))); // NOI18N
         panel.add(jLabel5);
 
         jPanel1.add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 30, 300, 310));
@@ -531,7 +532,7 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_DisMarLibresActionPerformed
 
     private void addInsBotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInsBotActionPerformed
-        BufferedReader bufferLectura = null;
+        /* BufferedReader bufferLectura = null;
         try {
             dlsS = new ArrayList<>();
             rwsS = new ArrayList<>();
@@ -565,6 +566,35 @@ public class UI extends javax.swing.JFrame {
                 }
             }
         }
+        setInst();*/
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("csv", "csv");
+        fileC.setFileFilter(filter);
+        int op = fileC.showOpenDialog(this);
+        int c = 0, t = 0;
+        dlsS = new ArrayList<>();
+        rwsS = new ArrayList<>();
+        if (op == JFileChooser.APPROVE_OPTION) {
+            archivo = fileC.getSelectedFile();
+            try (Scanner sc = new Scanner(archivo)) {
+                while (sc.hasNextLine()) {
+                    String linea = sc.nextLine();
+                    String data[] = linea.split(",");
+                    for (int i = 0; i < data.length; i++) {
+                        if (c == 0 && t == 0) {
+                            dlsS.add(data[i].substring(1, data[i].length()));
+                            c = 1;
+                        } else if (t == 0 && c != 0) {
+                            dlsS.add(data[i]);
+                        } else {
+                            rwsS.add(data[i]);
+                        }
+                    }
+                    t++;
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         setInst();
     }//GEN-LAST:event_addInsBotActionPerformed
 
@@ -589,6 +619,9 @@ public class UI extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(this, error);
                         } else {
                             preset();
+                            //for (String a : dlsS) {
+                            //    aaaaa+=" "+a;
+                            //}
                             int tamSO = Integer.parseInt(DisTamSO.getText());
                             String[] lisMar = DisMarLibres.getText().split(",");
                             int[] lismar = new int[lisMar.length];
